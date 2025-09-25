@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>حاسبة صفقة (سبوت/فيوتشرز) — بسيط</title>
+  <style>
+    body{font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#0f1724; color:#e6eef8; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0;}
+    .card{background:linear-gradient(135deg,#111827 0%, #0b1220 100%); padding:20px; border-radius:12px; width:360px; box-shadow:0 8px 30px rgba(2,6,23,0.6);}
+    h1{font-size:18px; margin:0 0 12px; text-align:center;}
+    label{display:block; font-size:13px; margin-top:10px; color:#bcd3f0;}
+    input[type="number"]{width:100%; padding:10px 12px; margin-top:6px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:#071028; color:#e6eef8; font-size:14px; box-sizing:border-box;}
+    .row{display:flex; gap:8px;}
+    .half{flex:1;}
+    button{margin-top:14px; width:100%; padding:12px; border-radius:10px; border:none; background:#1f8ef1; color:white; font-weight:600; cursor:pointer; font-size:15px;}
+    .result{margin-top:14px; padding:12px; background:rgba(255,255,255,0.02); border-radius:8px; font-size:14px; line-height:1.5;}
+    .muted{color:#89a7d6; font-size:13px;}
+    .good{color:#8ee08e; font-weight:700;}
+    .bad{color:#ff8b8b; font-weight:700;}
+    .small{font-size:12px; color:#9fb4d8;}
+    footer{margin-top:10px; text-align:center; font-size:12px; color:#7f9fc9;}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>حاسبة صفقة — سبوت / فيوتشرز (بسيطة)</h1>
+
+    <label>سعر الدخول (Entry price)</label>
+    <input id="entry" type="number" step="any">
+
+    <div class="row">
+      <div class="half">
+        <label>سعر وقف الخسارة (SL)</label>
+        <input id="sl" type="number" step="any">
+      </div>
+      <div class="half">
+        <label>سعر جني الربح (TP)</label>
+        <input id="tp" type="number" step="any">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="half">
+        <label>رأس المال (USDT)</label>
+        <input id="capital" type="number" step="any">
+      </div>
+      <div class="half">
+        <label>الرافعة (Leverage)</label>
+        <input id="lev" type="number" step="1" min="1">
+      </div>
+    </div>
+
+    <button id="calcBtn">احسب لي</button>
+
+    <div id="res" class="result" aria-live="polite" style="display:none;">
+      <div class="muted">حجم التعرض (Position size) = <span id="pos"></span> USDT</div>
+      <div>التغير للوصول إلى <strong>TP</strong> = <span id="chgTP"></span>٪</div>
+      <div>التغير للوصول إلى <strong>SL</strong> = <span id="chgSL"></span>٪</div>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04); margin:8px 0;">
+
+      <div>الربح/الخسارة عند الوصول لـ <strong>TP</strong> = <span id="pnlTP" class="good"></span> USDT</div>
+      <div class="small">كنسبة من رأس المال = <span id="pnlTPpct" class="good"></span>%</div>
+
+      <div style="margin-top:8px;">الربح/الخسارة عند الوصول لـ <strong>SL</strong> = <span id="pnlSL" class="bad"></span> USDT</div>
+      <div class="small">كنسبة من رأس المال = <span id="pnlSLpct" class="bad"></span>%</div>
+
+      <div style="margin-top:10px;">نسبة الربح إلى الخسارة (Reward : Risk) = <span id="rr"></span></div>
+      <div class="small" style="margin-top:6px;">ملاحظة: الحسابات تفترض أن الصفقة Long (شراء). لن يأخذ هذا الحاسوب عمولات التداول أو التمويل بعين الاعتبار.</div>
+    </div>
+
+    <footer>املأ الخانات واضغط "احسب لي"</footer>
+  </div>
+
+  <script>
+    const fmt = n => {
+      if (isNaN(n) || !isFinite(n)) return '-';
+      return Math.round((n + Number.EPSILON) * 100) / 100;
+    };
+
+    document.getElementById('calcBtn').addEventListener('click', () => {
+      const entry = parseFloat(document.getElementById('entry').value);
+      const sl = parseFloat(document.getElementById('sl').value);
+      const tp = parseFloat(document.getElementById('tp').value);
+      const capital = parseFloat(document.getElementById('capital').value);
+      const lev = parseFloat(document.getElementById('lev').value) || 1;
+
+      if (!entry || !capital || entry <= 0 || capital <= 0) {
+        alert('تأكد من إدخال سعر دخول ورأس مال صالحين.');
+        return;
+      }
+
+      const position = capital * lev;
+      const changeTP = (tp - entry) / entry;
+      const changeSL = (sl - entry) / entry;
+
+      const pnlTP = changeTP * position;
+      const pnlSL = changeSL * position;
+
+      const pnlTPpct = (pnlTP / capital) * 100;
+      const pnlSLpct = (pnlSL / capital) * 100;
+
+      let rr = '-';
+      const absLoss = Math.abs(pnlSL);
+      if (absLoss > 0) rr = fmt(pnlTP / absLoss) + ' : 1';
+
+      document.getElementById('pos').textContent = fmt(position);
+      document.getElementById('chgTP').textContent = fmt(changeTP * 100);
+      document.getElementById('chgSL').textContent = fmt(changeSL * 100);
+
+      document.getElementById('pnlTP').textContent = (pnlTP>=0?'+':'') + fmt(pnlTP);
+      document.getElementById('pnlTPpct').textContent = (pnlTPpct>=0?'+':'') + fmt(pnlTPpct);
+
+      document.getElementById('pnlSL').textContent = (pnlSL>=0?'+':'') + fmt(pnlSL);
+      document.getElementById('pnlSLpct').textContent = (pnlSLpct>=0?'+':'') + fmt(pnlSLpct);
+
+      document.getElementById('rr').textContent = rr;
+      document.getElementById('res').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
