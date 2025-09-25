@@ -63,7 +63,7 @@
       left: 14px;
       background: transparent;
       border: none;
-      font-size: 20px;
+      font-size: 22px;
       cursor: pointer;
     }
     label {
@@ -146,21 +146,12 @@
 
     <div id="res" class="result" style="display:none;">
       <div class="muted">📌 حجم الصفقة = <span id="pos"></span> USDT</div>
-      <div>📈 التغير حتى TP = <span id="chgTP"></span>%</div>
-      <div>📉 التغير حتى SL = <span id="chgSL"></span>%</div>
-
-      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1); margin:12px 0;">
-
-      <div>✅ الربح عند TP = <span id="pnlTP" class="good"></span> USDT</div>
-      <div class="small">(% من رأس المال = <span id="pnlTPpct" class="good"></span>%)</div>
-
-      <div style="margin-top:10px;">❌ الخسارة عند SL = <span id="pnlSL" class="bad"></span> USDT</div>
-      <div class="small">(% من رأس المال = <span id="pnlSLpct" class="bad"></span>%)</div>
-
+      <div>📈 الربح عند TP = <span id="pnlTP" class="good"></span> USDT (<span id="pnlTPpct" class="good"></span>%)</div>
+      <div>📉 الخسارة عند SL = <span id="pnlSL" class="bad"></span> USDT (<span id="pnlSLpct" class="bad"></span>%)</div>
       <div style="margin-top:12px;">⚖️ نسبة العائد/المخاطرة = <span id="rr"></span></div>
     </div>
 
-    <footer>✨ أضفها للشاشة الرئيسية — يدعم الوضع الداكن والفاتح</footer>
+    <footer>✨ أضفها للشاشة الرئيسية — يدعم الوضع الداكن والفاتح مع حفظ التفضيل</footer>
   </div>
 
   <script>
@@ -192,26 +183,28 @@
       const rr = pnlSL !== 0 ? fmt(pnlTP / Math.abs(pnlSL)) + " : 1" : "-";
 
       document.getElementById('pos').textContent = fmt(position);
-      document.getElementById('chgTP').textContent = fmt(changeTP * 100);
-      document.getElementById('chgSL').textContent = fmt(changeSL * 100);
       document.getElementById('pnlTP').textContent = (pnlTP>=0?'+':'') + fmt(pnlTP);
       document.getElementById('pnlTPpct').textContent = (pnlTPpct>=0?'+':'') + fmt(pnlTPpct);
       document.getElementById('pnlSL').textContent = (pnlSL>=0?'+':'') + fmt(pnlSL);
       document.getElementById('pnlSLpct').textContent = (pnlSLpct>=0?'+':'') + fmt(pnlSLpct);
+      document.getElementById('chgTP').textContent = fmt(changeTP*100);
+      document.getElementById('chgSL').textContent = fmt(changeSL*100);
       document.getElementById('rr').textContent = rr;
 
       document.getElementById('res').style.display = 'block';
     });
 
-    // التبديل بين الوضعين
+    // التبديل بين الوضعين مع حفظ التفضيل
     const toggleBtn = document.getElementById('themeToggle');
     const root = document.documentElement;
 
     function updateTheme() {
       if (root.classList.contains('dark')) {
         toggleBtn.textContent = "☀️";
+        localStorage.setItem('theme', 'dark');
       } else {
         toggleBtn.textContent = "🌙";
+        localStorage.setItem('theme', 'light');
       }
     }
 
@@ -220,10 +213,12 @@
       updateTheme();
     });
 
-    // تحميل الوضع حسب النظام
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      root.classList.add('dark');
-    }
+    // تحميل الوضع من LocalStorage أو حسب النظام
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') root.classList.add('dark');
+    else if (savedTheme === 'light') root.classList.remove('dark');
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.classList.add('dark');
+
     updateTheme();
   </script>
 </body>
