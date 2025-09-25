@@ -2,13 +2,13 @@
 <html lang="ar">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=0.70, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.80, maximum-scale=1, user-scalable=no" />
   <title>حاسبة صفقات</title>
 
   <!-- إعدادات تطبيق iPhone -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="حاسبة صفقات">
+  <meta name="apple-mobile-web-app-title" content="Binance حاسبة صفقات">
   <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/100/ffffff/calculator.png">
 
   <style>
@@ -59,12 +59,13 @@
     }
     .theme-toggle {
       position: absolute;
-      top: 14px;
-      left: 14px;
+      top: 10px;
+      left: 10px;
       background: transparent;
       border: none;
       font-size: 22px;
       cursor: pointer;
+      z-index: 10;
     }
     label {
       display: block;
@@ -85,7 +86,7 @@
     }
     .row { display: flex; gap: 10px; }
     .half { flex: 1; }
-    button {
+    button.calc-btn {
       margin-top: 18px;
       width: 100%;
       padding: 16px;
@@ -142,7 +143,7 @@
       </div>
     </div>
 
-    <button id="calcBtn">احسب</button>
+    <button id="calcBtn" class="calc-btn">احسب</button>
 
     <div id="res" class="result" style="display:none;">
       <div class="muted">📌 حجم الصفقة = <span id="pos"></span> USDT</div>
@@ -151,7 +152,8 @@
       <div style="margin-top:12px;">⚖️ نسبة العائد/المخاطرة = <span id="rr"></span></div>
     </div>
 
-    <footer>✨ أضفها للشاشة الرئيسية — يدعم الوضع الداكن والفاتح مع حفظ التفضيل</footer>
+    <footer> استغفر الله العظيم وأتوب إليه
+      حاسبة صفقات فيوتشر (بسيطة)</footer>
   </div>
 
   <script>
@@ -187,8 +189,6 @@
       document.getElementById('pnlTPpct').textContent = (pnlTPpct>=0?'+':'') + fmt(pnlTPpct);
       document.getElementById('pnlSL').textContent = (pnlSL>=0?'+':'') + fmt(pnlSL);
       document.getElementById('pnlSLpct').textContent = (pnlSLpct>=0?'+':'') + fmt(pnlSLpct);
-      document.getElementById('chgTP').textContent = fmt(changeTP*100);
-      document.getElementById('chgSL').textContent = fmt(changeSL*100);
       document.getElementById('rr').textContent = rr;
 
       document.getElementById('res').style.display = 'block';
