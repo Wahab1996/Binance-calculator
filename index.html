@@ -3,83 +3,110 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>حاسبة صفقة (سبوت/فيوتشرز)</title>
+  <title>حاسبة صفقات</title>
+
+  <!-- إعدادات تطبيق iPhone -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="حاسبة صفقات">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/100/ffffff/calculator.png">
+
   <style>
+    :root {
+      --bg: #f5f6fa;
+      --card-bg: #ffffff;
+      --text: #222;
+      --subtext: #555;
+      --primary: #1f8ef1;
+      --good: #0a9d3f;
+      --bad: #c62828;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1724;
+        --card-bg: linear-gradient(135deg, #111827 0%, #0b1220 100%);
+        --text: #e6eef8;
+        --subtext: #9fb4d8;
+        --primary: #1f8ef1;
+        --good: #8ee08e;
+        --bad: #ff8b8b;
+      }
+    }
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: #0f1724;
-      color: #e6eef8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      padding: 10px;
+      padding: 12px;
     }
     .card {
-      background: linear-gradient(135deg, #111827 0%, #0b1220 100%);
+      background: var(--card-bg);
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 16px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      max-width: 420px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
     }
     h1 {
-      font-size: 18px;
-      margin: 0 0 12px;
+      font-size: 20px;
+      margin: 0 0 14px;
       text-align: center;
     }
     label {
       display: block;
-      font-size: 14px;
+      font-size: 15px;
       margin-top: 12px;
-      color: #bcd3f0;
+      color: var(--subtext);
     }
     input[type="number"] {
       width: 100%;
-      padding: 14px 12px; /* أكبر عشان ما يزوم */
+      padding: 16px 12px;
       margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: #071028;
-      color: #e6eef8;
-      font-size: 16px; /* مهم للجوال */
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: transparent;
+      color: var(--text);
+      font-size: 17px;
       box-sizing: border-box;
     }
-    .row { display: flex; gap: 8px; }
+    .row { display: flex; gap: 10px; }
     .half { flex: 1; }
     button {
-      margin-top: 16px;
+      margin-top: 18px;
       width: 100%;
-      padding: 14px;
-      border-radius: 10px;
+      padding: 16px;
+      border-radius: 12px;
       border: none;
-      background: #1f8ef1;
+      background: var(--primary);
       color: white;
       font-weight: 600;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 17px;
     }
     .result {
-      margin-top: 14px;
-      padding: 12px;
-      background: rgba(255,255,255,0.02);
-      border-radius: 8px;
-      font-size: 15px;
+      margin-top: 16px;
+      padding: 14px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 10px;
+      font-size: 16px;
       line-height: 1.6;
     }
-    .muted { color: #89a7d6; font-size: 13px; }
-    .good { color: #8ee08e; font-weight: 700; }
-    .bad { color: #ff8b8b; font-weight: 700; }
-    .small { font-size: 12px; color: #9fb4d8; }
-    footer { margin-top: 12px; text-align: center; font-size: 12px; color: #7f9fc9; }
+    .muted { color: var(--subtext); font-size: 14px; }
+    .good { color: var(--good); font-weight: 700; }
+    .bad { color: var(--bad); font-weight: 700; }
+    .small { font-size: 13px; color: var(--subtext); }
+    footer { margin-top: 14px; text-align: center; font-size: 13px; color: var(--subtext); }
   </style>
 </head>
 <body>
-  <div class="card" role="main">
-    <h1>📊 حاسبة صفقة — سبوت / فيوتشرز</h1>
+  <div class="card">
+    <h1>📊 حاسبة الصفقات</h1>
 
-    <label>سعر الدخول (Entry price)</label>
+    <label>سعر الدخول</label>
     <input id="entry" type="number" inputmode="decimal">
 
     <div class="row">
@@ -99,30 +126,30 @@
         <input id="capital" type="number" inputmode="decimal">
       </div>
       <div class="half">
-        <label>الرافعة (Leverage)</label>
+        <label>الرافعة</label>
         <input id="lev" type="number" inputmode="numeric" min="1">
       </div>
     </div>
 
     <button id="calcBtn">احسب</button>
 
-    <div id="res" class="result" aria-live="polite" style="display:none;">
-      <div class="muted">📌 حجم الصفقة (Position size) = <span id="pos"></span> USDT</div>
-      <div>📈 التغير إلى <strong>TP</strong> = <span id="chgTP"></span>%</div>
-      <div>📉 التغير إلى <strong>SL</strong> = <span id="chgSL"></span>%</div>
+    <div id="res" class="result" style="display:none;">
+      <div class="muted">📌 حجم الصفقة = <span id="pos"></span> USDT</div>
+      <div>📈 التغير حتى TP = <span id="chgTP"></span>%</div>
+      <div>📉 التغير حتى SL = <span id="chgSL"></span>%</div>
 
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08); margin:10px 0;">
+      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1); margin:12px 0;">
 
-      <div>✅ الربح عند <strong>TP</strong> = <span id="pnlTP" class="good"></span> USDT</div>
+      <div>✅ الربح عند TP = <span id="pnlTP" class="good"></span> USDT</div>
       <div class="small">(% من رأس المال = <span id="pnlTPpct" class="good"></span>%)</div>
 
-      <div style="margin-top:10px;">❌ الخسارة عند <strong>SL</strong> = <span id="pnlSL" class="bad"></span> USDT</div>
+      <div style="margin-top:10px;">❌ الخسارة عند SL = <span id="pnlSL" class="bad"></span> USDT</div>
       <div class="small">(% من رأس المال = <span id="pnlSLpct" class="bad"></span>%)</div>
 
-      <div style="margin-top:12px;">⚖️ نسبة العائد للمخاطرة = <span id="rr"></span></div>
+      <div style="margin-top:12px;">⚖️ نسبة العائد/المخاطرة = <span id="rr"></span></div>
     </div>
 
-    <footer>املأ الحقول واضغط "احسب"</footer>
+    <footer>✨ أضفها للشاشة الرئيسية — تدعم الوضع الداكن والفاتح</footer>
   </div>
 
   <script>
